@@ -32,11 +32,17 @@ const handleInvalidPath = (req, res) => {
   res.status(404).send(errorMsg);  
 };   
   
+const getLiveTrainInfo = (req, res) => {  
+  trainAPI.getLiveTrainInfo(req.query.trainNo,req.query.date)  
+    .then(data => res.json(data))  
+    .catch(error => res.status(500).json({ error: error.toString() }));  
+};
 
 module.exports = {  
   getTrainInformation,  
   getTrainBtwStation,  
   getTrainOnDate,  
   getRoute,
-  handleInvalidPath  
+  handleInvalidPath ,
+  getLiveTrainInfo 
 };  

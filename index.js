@@ -12,14 +12,17 @@ const router = {
   traininfo: '/getTrainInformation',
   trainbtwnstn: '/getTrainBtwStation',
   trainonDate: '/getTrainOnDate',
-  trainrouter: '/getRoute'
+  trainrouter: '/getRoute',
+  trainlive:'/getLiveTrainInfo',
+  PNRinfo:'/getPNRinfo'
 };
 app.use("/api",userRoute);
 app.get(router.traininfo, routes.getTrainInformation);
 app.get(router.trainbtwnstn, routes.getTrainBtwStation);
 app.get(router.trainonDate, routes.getTrainOnDate);
 app.get(router.trainrouter, routes.getRoute);
-
+app.get(router.trainlive,routes.getLiveTrainInfo);
+// app.get(router.PNRinfo,routes.getPNRinfo);
 app.use('*', routes.handleInvalidPath);
 
 app.listen(port, () => {

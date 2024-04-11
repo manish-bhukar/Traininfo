@@ -13,10 +13,10 @@ console.log(trainNo)
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:6080/getTrainInformation?trainNo=${trainNo}`
+          `http://localhost:6080/getTrainInformation/?trainNo=${trainNo}`
         );
         setD(response.data);
-       // console.log(d.data)
+        console.log(response.data)
         const trainD = response.data;
         const fetchedTrainData = trainD.data;
         setTrainData(fetchedTrainData);

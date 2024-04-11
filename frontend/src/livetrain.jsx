@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import "./train.css"; // Import the provided CSS file
+import "./livetrain.css"; // Import the provided CSS file
 
-const TrainRouteMap = () => {
-  const { trainNo } = useParams();
+const LiveTrain = () => {
+  const { trainNo, date } = useParams();
   const [routeData, setRouteData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentStation, setCurrentStation] = useState("");
+  const trainNumber = trainNo.split('=')[1];
+  const dat = date.split('=')[1];
 
   useEffect(() => {
     const fetchRouteData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:6080/getRoute?trainNo=${trainNo}`);
+        const response = await axios.get(`http://localhost:6080/getLiveTrainInfo?trainNo=${trainNumber}&date=${dat}`);
         const responseData = response.data;
-        const data = responseData.data;
+        const route = responseData.route; // Access the route object
+        const liveStatusArray = responseData["live status"]; // Access the live status array
 
-        const stationsWithOrder = data.map((station, index) => ({
-          ...station,
-          order: index + 1,
-        }));
+        // Check if live status is an array before setting the routeData state
+        if (Array.isArray(liveStatusArray)) {
+          setRouteData(liveStatusArray);
+          setCurrentStation(route.current["current station code"]);
+        } else {
+          console.error("Live status is not an array:", liveStatusArray);
+        }
 
-        const sortedStations = stationsWithOrder.sort((a, b) => a.order - b.order);
-
-        setRouteData(sortedStations);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching train route data:", error);
@@ -32,7 +36,7 @@ const TrainRouteMap = () => {
     };
 
     fetchRouteData();
-  }, [trainNo]);
+  }, [trainNo, date]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -53,7 +57,7 @@ const TrainRouteMap = () => {
       {routeData.map((station, index) => (
         <div
           key={station.station_code}
-          className={`timeline-item ${index % 2 === 0 ? 'even' : 'odd'}`}
+          className={`timeline-item ${index % 2 === 0 ? 'even' : 'odd'} ${station.Has_passed ? 'passed' : ''} ${station.station_code === currentStation ? 'current' : ''}`}
           style={{ zIndex: 9000 - index, backgroundColor: `var(--color${index % 7 + 1})` }}
         >
           {index !== 0 && (
@@ -63,13 +67,20 @@ const TrainRouteMap = () => {
           <div className="content-half-circle"></div>
           <div className="buble-content">
             <div className="content-year">
-              <p className="time" style={{ backgroundColor: `var(--color${index % 7 + 1})` }}>Arrive: { station.arrive}</p>
-              <p className="station-name bg-white text-black sliding-text">{station.source_stn_name}</p>
-              <p className="time" style={{ backgroundColor: `var(--color${index % 7 + 1})` }}>{station.depart}</p>
+              <p className="time" style={{ backgroundColor: `var(--color${index % 7 + 1})` }}>{station.Arrival}</p>
+              <p className="station-name bg-white text-black sliding-text">{station.Station}</p>
+              <p className="time" style={{ backgroundColor: `var(--color${index % 7 + 1})` }}>{station.Departure}</p>
             </div>
           </div>
           <div className="circle" style={{ backgroundColor: `var(--color${index % 7 + 1})` }}>
-            <div className="inner-circle" style={{ backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/9746/9746772.png)` }}></div>
+            <div className="inner-circle">
+              {station.station_code === currentStation && (
+                <div className="current-train-dot"></div>
+              )}
+            {station['Has passed']&& (
+                <div className="passed-mark">&#10004;</div>
+              )}
+            </div>
           </div>
         </div>
       ))}
@@ -77,4 +88,4 @@ const TrainRouteMap = () => {
   );
 };
 
-export default TrainRouteMap;
+export default LiveTrain;

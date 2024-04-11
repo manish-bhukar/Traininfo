@@ -6,13 +6,18 @@ import Signup from "./Signup";
 import TrainInfoPage from "./Traininfo";
 import Mainpage from "./Mainpage";
 import TrainCard from "./Traincard";
+import LiveTrain from "./livetrain";
 import TrainRouteMap from "./Trainroute";
 import { useState } from "react";
+import PnrForm from "./PNR";
+import LiveTrainForm from "./LiveTrainpage";
+import PnrStatus from "./Pnrfetch";
+import AssistanceCard from "./Assistance";
 function App() {
   const [trainNo,setTrainNo]=useState("")
 const router=createBrowserRouter([
   {
-    path:"/login",
+    path:"/",
     element:<Login></Login>
   }
   ,
@@ -33,6 +38,25 @@ const router=createBrowserRouter([
   {
     path:"mainpage",
     element:<Mainpage></Mainpage>
+  },
+  {
+    path:"/live-train-info/:trainNo/:date",
+    element:<LiveTrain></LiveTrain>
+  },
+  {
+    path:"train-live",
+    element:<LiveTrainForm></LiveTrainForm>
+  },
+  {
+    path:"pnr-form",
+    element:<PnrForm></PnrForm>
+  },{
+    path:"pnrinfo/:pnr",
+    element:<PnrStatus></PnrStatus>
+  },
+  {
+    path:"/getassistance",
+    element:<AssistanceCard></AssistanceCard>
   }
 ])
   return (

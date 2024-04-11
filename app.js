@@ -2,6 +2,7 @@ const axios = require('axios');
 const winston = require('winston');  
   
 const BASE_URI = 'https://indian-railway-api.cyclic.app/trains';  
+const SECOND_URI="http://ec2-3-109-210-229.ap-south-1.compute.amazonaws.com:5000"
   
 const logger = winston.createLogger({  
   level: 'info',  
@@ -14,7 +15,7 @@ const logger = winston.createLogger({
 });  
   
 const getTrainInformation = (trainNo) => {  
-  const url = `${BASE_URI}/getTrain/?trainNo=${trainNo}`;  
+  const url = `${SECOND_URI}/getTrainInfo/?trainNo=${trainNo}`;  
   return axios.get(url)  
     .then(response => {  
       logger.info(`[getTrainInformation] trainNo: ${trainNo}, status: ${response.status}`);  
@@ -27,7 +28,7 @@ const getTrainInformation = (trainNo) => {
 };  
   
 const getTrainBtwStation = (from, to) => {  
-  const url = `${BASE_URI}/betweenStations/?from=${from}&to=${to}`;  
+  const url = `${SECOND_URI}/betweenStations/?from=${from}&to=${to}`;  
   return axios.get(url)  
     .then(response => {  
       logger.info(`[getTrainBtwStation] from: ${from}, to: ${to}, status: ${response.status}`);  
@@ -40,7 +41,7 @@ const getTrainBtwStation = (from, to) => {
 };  
   
 const getTrainOnDate = (from, to, date) => {  
-  const url = `${BASE_URI}/gettrainon?from=${from}&to=${to}&date=${date}`;  
+  const url = `${SECOND_URI}/gettrainon?from=${from}&to=${to}&date=${date}`;  
   return axios.get(url)  
     .then(response => {  
       logger.info(`[getTrainOnDate] from: ${from}, to: ${to}, date: ${date}, status: ${response.status}`);  
@@ -53,7 +54,7 @@ const getTrainOnDate = (from, to, date) => {
 };  
   
 const getRoute = (trainNo) => {  
-  const url = `${BASE_URI}/getRoute?trainNo=${trainNo}`;  
+  const url = `${SECOND_URI}/getRoute?trainNo=${trainNo}`;  
   return axios.get(url)  
     .then(response => {  
       logger.info(`[getRoute] trainNo: ${trainNo}, status: ${response.status}`);  
@@ -65,12 +66,38 @@ const getRoute = (trainNo) => {
     });  
 };  
 
+const getLiveTrainInfo = (trainNo,date) => {  
+  const url = `${SECOND_URI}/liveTrainInfo/?trainNo=${trainNo}&date=${date}`;   
+  return axios.get(url)  
+    .then(response => {  
+      logger.info(`[getLiveTrainInfo] trainNo: ${trainNo},date:${date}, status: ${response.status}`);  
+      return response.data;  
+    })  
+    .catch(error => {  
+      logger.error(`[getLiveTrainInfo] trainNo: ${trainNo},date:${date}, error: ${error.message}`);  
+      throw error;  
+    });  
+};  
+const getPNRinfo = (PNR) => {  
+  const url = `${SECOND_URI}/getPNRinfo/?pnr=${PNR}`;  
+  return axios.get(url)  
+    .then(response => {  
+      logger.info(`[getPNRinfo] PNR: ${PNR}`);  
+      return response;  
+    })  
+    .catch(error => {  
+      logger.error(`[getPNRinfo] PNR: ${PNR}`);  
+      throw error;  
+    });  
+};   
 
-  
+
+
 module.exports = {  
   getTrainInformation,  
   getTrainBtwStation,  
   getTrainOnDate,  
   getRoute, 
+  getLiveTrainInfo,
   logger 
 };  
